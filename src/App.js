@@ -1,12 +1,12 @@
 import React from 'react';
 import MainPage from './components/MainPage/MainPage';
-import Provider from './context/Provider';
+import PlanetsProvider from './context/PlanetsProvider';
 
 function App() {
   return (
-    <Provider>
+    <PlanetsProvider>
       <MainPage />
-    </Provider>
+    </PlanetsProvider>
   );
 }
 

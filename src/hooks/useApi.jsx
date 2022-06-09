@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import planetsAPI from '../services/planetAPI';
 
 export default function useApi() {
-  const [request, setRequest] = useState({});
+  const [requestAPI, setRequest] = useState({});
 
-  const getPlanets = async () => {
-    const planets = await planetsAPI();
-    setRequest(planets);
-  };
+  useEffect(() => {
+    const getPlanets = async () => {
+      const planets = await planetsAPI();
+      setRequest(planets.results);
+    };
+    getPlanets();
+  }, []);
 
-  useEffect(() => getPlanets(), []);
-
-  return { request, getPlanets };
+  return { requestAPI };
 }
