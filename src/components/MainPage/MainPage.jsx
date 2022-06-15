@@ -2,33 +2,33 @@ import React, { useContext, useState } from 'react';
 import PlanetsContext from '../../context/PlanetsContext';
 import Table from '../Table/Table';
 
-const INITIAL_STATE = {
-  column: 'population',
-  comparison: 'maior que',
-  value: 0,
-};
-
-const columnFilter = [
-  'population',
-  'orbital_period',
-  'diameter',
-  'rotation_period',
-  'surface_water',
-];
-
-const comparisonFilter = [
-  'maior que',
-  'menor que',
-  'igual a',
-];
-
 export default function MainPage() {
+  const INITIAL_STATE = {
+    column: 'population',
+    comparison: 'maior que',
+    value: 0,
+  };
+
   const {
     onChangeInput,
     setNewFilter,
-    filter: { filterByName: { name } },
+    filter: { filterByName: { name }, filterByNumericValues },
   } = useContext(PlanetsContext);
   const [filter, setFilter] = useState(INITIAL_STATE);
+
+  const columnFilter = [
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ].filter((item) => !filterByNumericValues.some(({ column }) => column === item));
+
+  const comparisonFilter = [
+    'maior que',
+    'menor que',
+    'igual a',
+  ];
 
   const handle = ({ target }) => setFilter({ ...filter, [target.id]: target.value });
 
