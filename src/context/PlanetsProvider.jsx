@@ -17,8 +17,23 @@ export default function PlanetsContext({ children }) {
 
   const setNewFilter = (newFilter) => {
     setFilter((prev) => ({
-      ...filter,
+      ...prev,
       filterByNumericValues: prev.filterByNumericValues.concat(newFilter),
+    }));
+  };
+
+  const removeFilter = (indexOfFilter) => {
+    const removeAll = -1;
+    if (indexOfFilter === removeAll) {
+      return setFilter((prev) => ({
+        ...prev,
+        filterByNumericValues: [],
+      }));
+    }
+    setFilter((prev) => ({
+      ...prev,
+      filterByNumericValues: prev
+        .filterByNumericValues.filter((_item, index) => index !== indexOfFilter),
     }));
   };
 
@@ -34,7 +49,7 @@ export default function PlanetsContext({ children }) {
     const filterByNumeric = () => {
       const { filterByNumericValues } = filter;
       if (!filterByNumericValues.length) return;
-      let newList = [...request];
+      let newList = [...requestAPI];
       filterByNumericValues.forEach((filterObj) => {
         newList = newList.filter((planet) => {
           if (filterObj.comparison === 'maior que') {
@@ -48,12 +63,11 @@ export default function PlanetsContext({ children }) {
       });
       setRequest(newList);
     };
-
     filterByName();
     filterByNumeric();
-  }, [filter.filterByName, requestAPI, filter.filterByNumericValues]);
+  }, [requestAPI, filter]);
 
-  const context = { request, onChangeInput, filter, setNewFilter };
+  const context = { request, onChangeInput, filter, setNewFilter, removeFilter };
 
   return (
     <Context.Provider value={ context }>

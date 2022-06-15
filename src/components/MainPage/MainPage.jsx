@@ -12,6 +12,7 @@ export default function MainPage() {
   const {
     onChangeInput,
     setNewFilter,
+    removeFilter,
     filter: { filterByName: { name }, filterByNumericValues },
   } = useContext(PlanetsContext);
   const [filter, setFilter] = useState(INITIAL_STATE);
@@ -36,6 +37,8 @@ export default function MainPage() {
     setNewFilter({ ...filter });
     setFilter(INITIAL_STATE);
   };
+
+  const removeAll = -1;
 
   return (
     <div>
@@ -93,6 +96,28 @@ export default function MainPage() {
         >
           Filtrar
         </button>
+        <div>
+          {
+            filterByNumericValues.map(({ column, comparison, value }, index) => (
+              <div data-testid="filter" key={ index }>
+                <p>{`${column} ${comparison} ${value}`}</p>
+                <button
+                  type="button"
+                  onClick={ () => removeFilter(index) }
+                >
+                  Remove
+                </button>
+              </div>
+            ))
+          }
+          <button
+            type="button"
+            data-testid="button-remove-filters"
+            onClick={ () => removeFilter(removeAll) }
+          >
+            Remover filtragens
+          </button>
+        </div>
       </form>
       <Table />
     </div>
