@@ -32,7 +32,7 @@ export default function Table() {
           request.length
             ? request.map((result, index) => (
               <tr key={ index }>
-                <td>{ result.name }</td>
+                <td data-testid="planet-name">{ result.name }</td>
                 <td>{ result.rotation_period }</td>
                 <td>{ result.orbital_period }</td>
                 <td>{ result.diameter }</td>

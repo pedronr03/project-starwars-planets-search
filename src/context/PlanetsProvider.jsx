@@ -6,6 +6,7 @@ import useApi from '../hooks/useApi';
 export default function PlanetsContext({ children }) {
   const { requestAPI } = useApi();
   const [request, setRequest] = useState([]);
+  const [order, setOrder] = useState({ column: '', sort: '' });
   const [filter, setFilter] = useState({
     filterByName: { name: '' },
     filterByNumericValues: [],
@@ -37,37 +38,59 @@ export default function PlanetsContext({ children }) {
     }));
   };
 
+  const alphabetical = (list) => {
+    const alphabeticalList = list.sort((a, b) => {
+      const less = -1;
+      if (a.name < b.name) return less;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+    return alphabeticalList;
+  };
+
+  const sortItems = (list) => {
+    const { column, sort } = order;
+    if (!column) return alphabetical(list);
+    const unknown = list.filter((item) => item[column] === 'unknown');
+    let newList = list.filter((item) => item[column] !== 'unknown');
+    newList = newList.sort((a, b) => Number(a[column]) - Number(b[column]));
+    newList = sort === 'ASC' ? newList : newList.reverse();
+    return [...newList, ...unknown];
+  };
+
   useEffect(() => {
     const filterByName = () => {
       if (!requestAPI.length) return;
       const { name } = filter.filterByName;
-      const map = requestAPI
+      const newList = requestAPI
         .filter((planet) => planet.name.toLowerCase().includes(name.toLowerCase()));
-      setRequest(map);
+      setRequest(sortItems(newList));
     };
 
     const filterByNumeric = () => {
       const { filterByNumericValues } = filter;
       if (!filterByNumericValues.length) return;
       let newList = [...requestAPI];
-      filterByNumericValues.forEach((filterObj) => {
+      filterByNumericValues.forEach(({ column, comparison, value }) => {
         newList = newList.filter((planet) => {
-          if (filterObj.comparison === 'maior que') {
-            return Number(planet[filterObj.column]) > filterObj.value;
+          if (comparison === 'maior que') {
+            return Number(planet[column]) > value;
           }
-          if (filterObj.comparison === 'menor que') {
-            return Number(planet[filterObj.column]) < filterObj.value;
+          if (comparison === 'menor que') {
+            return Number(planet[column]) < value;
           }
-          return planet[filterObj.column] === filterObj.value;
+          return planet[column] === value;
         });
       });
-      setRequest(newList);
+      setRequest(sortItems(newList));
     };
     filterByName();
     filterByNumeric();
-  }, [requestAPI, filter]);
+  }, [requestAPI, filter, order]);
 
-  const context = { request, onChangeInput, filter, setNewFilter, removeFilter };
+  const context = {
+    request, onChangeInput, filter, setNewFilter, removeFilter, setOrder,
+  };
 
   return (
     <Context.Provider value={ context }>

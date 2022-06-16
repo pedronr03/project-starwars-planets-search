@@ -13,17 +13,22 @@ export default function MainPage() {
     onChangeInput,
     setNewFilter,
     removeFilter,
+    setOrder,
     filter: { filterByName: { name }, filterByNumericValues },
   } = useContext(PlanetsContext);
   const [filter, setFilter] = useState(INITIAL_STATE);
+  const [orderUp, setOrderUp] = useState({ column: 'population', sort: 'ASC' });
 
-  const columnFilter = [
+  const columnOrder = [
     'population',
     'orbital_period',
     'diameter',
     'rotation_period',
     'surface_water',
-  ].filter((item) => !filterByNumericValues.some(({ column }) => column === item));
+  ];
+
+  const columnFilter = columnOrder
+    .filter((item) => !filterByNumericValues.some(({ column }) => column === item));
 
   const comparisonFilter = [
     'maior que',
@@ -31,7 +36,13 @@ export default function MainPage() {
     'igual a',
   ];
 
-  const handle = ({ target }) => setFilter({ ...filter, [target.id]: target.value });
+  const handleFilter = ({ target }) => setFilter({
+    ...filter, [target.id]: target.value,
+  });
+
+  const handleSort = ({ target }) => {
+    setOrderUp((prev) => ({ ...prev, sort: target.value }));
+  };
 
   const getFilter = () => {
     setNewFilter({ ...filter });
@@ -57,7 +68,7 @@ export default function MainPage() {
             id="column"
             data-testid="column-filter"
             value={ filter.column }
-            onChange={ handle }
+            onChange={ handleFilter }
           >
             {
               columnFilter.map((column) => (
@@ -70,8 +81,7 @@ export default function MainPage() {
           <select
             id="comparison"
             data-testid="comparison-filter"
-            value={ filter.comparison }
-            onChange={ handle }
+            onChange={ handleFilter }
           >
             {
               comparisonFilter.map((comparison) => (
@@ -86,7 +96,7 @@ export default function MainPage() {
             type="number"
             id="value"
             data-testid="value-filter"
-            onChange={ handle }
+            onChange={ handleFilter }
           />
         </label>
         <button
@@ -95,6 +105,52 @@ export default function MainPage() {
           onClick={ getFilter }
         >
           Filtrar
+        </button>
+        <label htmlFor="columnOrder">
+          <select
+            id="columnOrder"
+            data-testid="column-sort"
+            onChange={
+              ({ target }) => setOrderUp((prev) => ({ ...prev, column: target.value }))
+            }
+          >
+            {
+              columnOrder.map((column) => (
+                <option key={ column } value={ column }>{ column }</option>
+              ))
+            }
+          </select>
+        </label>
+        <label htmlFor="ASC">
+          Ascendente
+          <input
+            onChange={ handleSort }
+            type="radio"
+            name="order"
+            id="ASC"
+            value="ASC"
+            checked={ orderUp.sort === 'ASC' }
+            data-testid="column-sort-input-asc"
+          />
+        </label>
+        <label htmlFor="DESC">
+          Descendente
+          <input
+            onChange={ handleSort }
+            type="radio"
+            name="order"
+            id="DESC"
+            value="DESC"
+            checked={ orderUp.sort === 'DESC' }
+            data-testid="column-sort-input-desc"
+          />
+        </label>
+        <button
+          type="button"
+          onClick={ () => setOrder(orderUp) }
+          data-testid="column-sort-button"
+        >
+          Ordenar
         </button>
         <div>
           {
